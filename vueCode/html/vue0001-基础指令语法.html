@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue基础指令语法</title>
+</head>
+
+
+<body>
+<div id="app">
+    <h1>{{title}}</h1>
+    <span>插值符\{\{\}\}插入的{{msg}}不会覆盖标签原有内容</span><br/><br/>
+    <span v-text="vTEXT">这里的数据会被覆盖</span>
+    <span v-html="vHTML">这里的数据会被覆盖</span>
+    <span id="vif" v-if="isTrue">v-if通过操作Dom树,显示隐藏节点</span><br/><br/>
+    <span id="vshow" v-show="isTrue">v-show通过操作标签样式的display属性控制标签的显示隐藏</span><br/><br/>
+    <ul v-for="(obj,index) in objList" :key="index">
+        <li>{{index}}-{{obj.id}}-{{obj.name}}-{{obj.age}}</li>
+
+    </ul>
+
+    <ul v-for="(value,key,index) in Obj">
+        <li>{{index}}-{{key}}--{{value}}</li>
+    </ul>
+
+    输入：<input v-model="inputmsg">
+    <span>输出：{{inputmsg}}</span><br/><br/>
+    <div v-bind:class="{aa:Cls,bb:!Cls }" v-on:mouseover="mouse" v-on:mouseleave="mouse">鼠标移入移出控制样式</div><br/>
+    <div :class="{aa:Cls,bb:!Cls }" @mouseover="mouse" @mouseleave="mouse">鼠标移入移出控制样式</div><br/>
+
+    <div :class="{aa:Cls_,bb:!Cls_ }">鼠标点击控制样式</div>
+    <button @click="mouseClick">点击</button>
+
+
+</div>
+</body>
+</html>
+
+
+<script src="../js/vue.js"></script>
+<script>
+    new Vue({
+        el: "#app",
+        data: {
+            title: "vue基础指令语法:",
+            msg: "数据",
+            vTEXT: "<h5>v-text直接渲染内容到页面</h5>",
+            vHTML: "<h5>v-html先进行html标签转化，再渲染</h5>",
+            isTrue: true,
+            objList:[{"id":1,"name":"huangyunqiang","age":31},{"id":2,"name":"light","age":31}],
+            Obj:{"id":1,"name":"huangyunqiang","age":31},
+            inputmsg: "v-model双向绑定",
+            Cls:false,
+            Cls_:false,
+
+
+        },
+        methods: {
+
+            mouse() {
+                console.log(111)
+                this.Cls = !this.Cls;
+
+            },
+
+            mouseClick(){
+                this.Cls_ = !this.Cls_;
+            }
+
+        }
+    })
+
+</script>
+
+
+<style>
+    .aa {
+        text-align: center;
+        width: 170px;
+        height:50px;
+        border:10px solid #F00
+    }
+    .bb {
+        text-align: center;
+        width: 170px;
+        height: 50px;
+        border:10px dashed green}
+</style>
+
+

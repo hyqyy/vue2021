@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue组件之间数据传递</title>
+</head>
+
+
+<body>
+<div id="app">
+    <h1 id="h1">{{title}}</h1><br/><br/>
+    -------------------------------------<br/>
+
+    <input v-model="name"/>
+    <login :name="name" status="200 OK" @testevent="testParent"></login>
+
+
+</div>
+</body>
+</html>
+
+
+<script src="../js/vue.js"></script>
+<script>
+
+
+    const login = {
+        "template": `
+            <div>
+                <h3>{{msg}}</h3>
+                <span>{{name}}--{{status}}</span>
+                <button @click="testChild">点我</button>
+            </div>`,
+        data() {
+            return {
+                msg: "注册局部组件-登录模块",
+            }
+        },
+        methods: {
+                testChild(){
+                    alert("子组件中的函数");
+                    this.$emit("testevent","子组件回传数据aaa","子组件回传数据bbb");
+
+                }
+        },
+        computed: {},
+        props:[
+            "name",
+            "status"
+        ]
+    }
+
+    new Vue({
+        el: "#app",
+        data: {
+            title: "vue组件之间数据传递:",
+            name:"原始父数据"
+        },
+        methods: {
+            testParent(x,y){
+                alert("定义在父组件中的函数")
+                console.log(`x=${x},y=${y}`)
+            }
+        },
+        computed: {},
+        components: {
+            login
+        }
+    })
+
+
+</script>
+
+
+

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue生命周期</title>
+</head>
+
+
+<body>
+<div id="app">
+    <h1 id="h1">{{title}}</h1>
+    <input  type="text" v-model="title">
+
+</div>
+</body>
+</html>
+
+
+<script src="../js/vue.js"></script>
+<script src="../js/axios.js"></script>
+<script>
+new Vue({
+    el: "#app",
+    data:{
+        title: "vue生命周期:",
+    },
+    methods:{},
+    computed:{},
+    beforeCreate(){// 第一个钩子函数，该函数执行时，仅仅完成vue自身内部事件和函数的注入
+        console.log("beforeCreate:",this.title);
+    },
+    created(){// 第二个钩子函数，该函数执行时，已经完成了自定义的
+        console.log("created:",this.title);
+    },
+    beforeMount(){// 第三个钩子函数，该函数执行时，html完成模板初始化，静待数据渲染
+        console.log("beforeMount:",document.getElementById("h1").innerText)
+    },
+    mounted(){// 第四个钩子函数，该函数执行时，html完成模板数据渲染完成
+        console.log("mounted:",document.getElementById("h1").innerText)
+    },
+    beforeUpdate(){// 第五个钩子函数，该函数执行时，data数据发生了改变，但是页面还没有改变
+        console.log("beforeUpdate data:",this.title)
+        console.log("beforeUpdate view:",document.getElementById("h1").innerText)
+
+    },
+    updated(){// 第五个钩子函数，该函数执行时，data数据发生了改变，并完成页面数据的重新渲染
+        console.log("updated data",this.title)
+        console.log("updated view:",document.getElementById("h1").innerText)
+    },
+
+    beforeDestroy(){
+        console.log("开始销毁")
+    },
+    destroyed(){
+        console.log("销毁完成")
+    }
+})
+
+
+</script>
+
+
+<style>
+
+</style>
+
+

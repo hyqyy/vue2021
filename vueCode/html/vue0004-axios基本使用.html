@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>axios基本使用</title>
+</head>
+
+
+<body>
+<div id="app">
+    <h1>{{title}}</h1>
+    <ul v-for="(item, index) in lists" :key="index">
+        <li>{{index+1}}.{{item}}</li>
+    </ul>
+
+
+</div>
+</body>
+</html>
+
+
+<script src="../js/vue.js"></script>
+<script src="../js/axios.js"></script>
+<script>
+    new Vue({
+        el: "#app",
+        data: {
+            title: "axios基本使用:",
+            lists: ["get请求", "post请求", "创建实例发请求", "请求拦截器", "响应拦截器"]
+        }
+    })
+    // get请求
+    axios.post("http://localhost:8082/user/login1?name=huangyunqiang&passwd=123456").then(
+        function (response) {
+            console.log(response.data);
+
+        }
+    ).catch(function (err) {
+        console.log(err);
+    })
+
+    // post请求
+    axios.post("http://localhost:8082/user/login3", {"name": "huangyunqiang", "passwd": 123456}).then(
+        function (response) {
+            console.log(response.data);
+
+        }
+    ).catch(function (err) {
+        console.log(err);
+    })
+
+    // 创建实例发送请求
+    let instance = axios.create({
+        baseURL: 'http://localhost:8082/',
+        timeout: 1000,
+        headers: {'token': 'dG9rZW5sb2dpbgo='}
+    });
+
+
+    instance.get("/user/login1?name=huangyunqiang&passwd=123456").then(
+        function (response) {
+            console.log(response.data);
+        }
+    ).catch(function (err) {
+        console.log(err);
+    })
+
+
+
+    instance.post("/user/login3", {"name": "huangyunqiang", "passwd": 123456}).then(
+        function (response) {
+            console.log(response.data);
+        }
+    ).catch(function (err) {
+        console.log(err);
+    })
+
+
+
+    // 请求拦截器
+
+    // 响应拦截器
+
+
+</script>
+
+
+<style>
+
+</style>
+
+

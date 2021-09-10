@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 引入bootstrap样式-->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+      integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+<head>
+    <meta charset="UTF-8">
+    <title>员工列表操作案例</title>
+</head>
+
+
+<body>
+<div id="app">
+    <h1 id="h1">{{title}}</h1><br/><br/>
+    <div class="container ">
+        <div class="row">
+            <div class="col-xs-12">
+                <table class="table table-striped table-bordered table-hover">
+                    <tr>
+                        <th>工号</th>
+                        <th>姓名</th>
+                        <th>工龄</th>
+                        <th>薪资</th>
+                        <th>操作</th>
+                    </tr>
+                    <tr v-for="(employee, index) in employees" :key="employee.id"
+                        :class="index % 2 == 0 ?'success':'info'">
+                        <td class="td">{{employee.id}}</td>
+                        <td class="td">{{employee.name}}</td>
+                        <td class="td">{{employee.age}}</td>
+                        <td class="td">{{employee.salary}}</td>
+                        <td class="td"><a href="javascript:;" style="text-decoration: none;"
+                                          @click="_delete(employee.id)" class="btn btn-danger btn-sm">删除</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+                                href="javascript:;"
+                                style="text-decoration: none;" @click="getOne(employee.id)"
+                                class="btn btn-warning btn-sm">修改</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <form>
+                    <div class="form-group" v-show="isTrue">
+                        <label for="key_id">工号:</label>
+                        <input id="key_id" v-model="employee.id" class="form-control" placeholder="请输入工号" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="key_name">姓名:</label>
+                        <input id="key_name" v-model="employee.name" class="form-control" placeholder="请输入姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="key_age">年龄:</label><br/>
+                        <input id="key_age" v-model="employee.age" class="form-control" placeholder="请输入年龄">
+                    </div>
+                    <div class="form-group">
+                        <label for="key_salary">薪资:</label>
+                        <input id="key_salary" v-model="employee.salary" class="form-control" placeholder="请输入工资">
+                    </div>
+
+
+                    <input type="button" value="保存&修改" @click="submit" class="btn btn-success btn-sm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input
+                        type="button" value="重置" @click="reset" class="btn btn-success btn-sm">
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+</body>
+</html>
+
+
+<script src="../js/vue.js"></script>
+<script src="../js/axios.js"></script>
+<script>
+    // 实例化axios对象,配置公用请求信息
+    const instance = axios.create({
+        baseURL: 'http://localhost:8082',
+        timeout: 5000,
+        headers: {'X-JWT': 'huangyunqiang'}
+    });
+
+    // 配置请求拦截器，将请求头里加上本地host
+    instance.interceptors.request.use(function (config) {
+        // 在发送请求之前做些什么
+        config.headers["localhost"] = "172.25.2.117"
+        return config;
+    }, function (error) {
+        // 对请求错误做些什么
+        return Promise.reject(error);
+    });
+
+
+    // 配置响应拦截器,将错误返回统一alert输出。
+    instance.interceptors.response.use(response => {
+        // 对响应数据做点什么
+        return response;
+    }, error => {
+        // 对响应错误做点什么
+        return alert(error);
+    });
+
+    new Vue({
+        el: "#app",
+        data: {
+            title: "员工列表操作案例:",
+            employees: [],
+            employee: {},
+            isTrue: false,
+        },
+        methods: {
+            getAll() {
+                instance.get("/sql/employee/all").then(
+                    response => this.employees = response.data
+                )
+            },
+            getOne(id) {
+                instance.get("/sql/employee/" + id).then(
+                    (response) => {
+                        this.employee = response.data[0];
+                        this.isTrue = true;
+                    }
+                )
+
+            },
+            submit() {
+                instance.post("/sql/employee/add", this.employee).then(
+                    response => {
+                        if (response.data) {
+                            this.getAll();
+                            this.employee = {};
+                        }
+                    }
+                )
+            },
+            reset() {
+                this.employee = {};
+                this.isTrue = false;
+            },
+            _delete(id) {
+                if (window.confirm("您确认删除吗？")) {
+                    instance.post("/sql/employee/delete", {"id": id}).then(
+                        response => {
+                            if (response.data) {
+                                this.getAll();
+                            }
+                        }
+                    )
+                }
+            },
+        },
+
+        computed: {}
+        ,
+        created() {
+            this.getAll();
+        }
+    })
+
+
+</script>
+
+
+<style>
+
+    .td {
+        text-align: center;
+    }
+
+    .table-bordered {
+        border: 5px solid #e2ef2152;
+    }
+</style>
+
+

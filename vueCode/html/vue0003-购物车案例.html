@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>购物车</title>
+</head>
+<body>
+<div id="app">
+    <h2>{{tmsg}}</h2><br>
+    商品编号：<input v-model="item.id">
+    商品名称：<input v-model="item.name">
+    商品价格：<input v-model="item.price">
+    商品数量：<input v-model="item.num">
+    <button @click="addGoods">添加到购物车</button>
+    <br><br><br>
+    <table border="1">
+        <tr>
+            <th>编号</th>
+            <th>名称</th>
+            <th>价格(¥)</th>
+            <th>购买数量</th>
+            <th>小计(¥)</th>
+        </tr>
+        <tr v-for="(Obj, index) in goods" :key="Obj.id">
+            <td>{{Obj.id}}</td>
+            <td>{{Obj.name}}</td>
+            <td>{{(Obj.price*1).toFixed(2)}}</td>
+            <td><input type="button" value="+" @click="addCount(index)">{{Obj.num}}<input type="button" value="-"
+                                                                                          @click="reduceCount(index)">
+            </td>
+            <td>{{(Obj.price*Obj.num).toFixed(2)}}</td>
+        </tr>
+    </table>
+    <h3>商品总价：{{totalPrice()}}元</h3>
+
+</div>
+</body>
+</html>
+<script src="../js/vue.js"></script>
+<script>
+    new Vue({
+        el: "#app",
+        data: {
+            tmsg: "购物车案例:",
+            goods: [
+                {id: 1, name: "iphone4", price: 5698.00, num: 3},
+                {id: 2, name: "iphone8", price: 8698.00, num: 5},
+                {id: 3, name: "iphone12", price: 9698.00, num: 2},
+            ],
+            item: {},
+
+        },
+        methods: {
+            addCount(index) {
+                this.goods[index].num++
+            },
+            reduceCount(index) {
+                if (this.goods[index].num > 0) {
+                    this.goods[index].num--
+                }
+            },
+            totalPrice() {
+                let totalPrice = 0;
+                for (let i = 0; i < this.goods.length; i++) {
+                    totalPrice += (this.goods[i].price * this.goods[i].num)
+                }
+                return totalPrice.toFixed(2)
+            },
+            addGoods() {
+                if (this.item.id != null && this.item.name != null && this.item.price != null && this.item.num >= 1) {
+                    console.log(this.goods);
+                    for (let i = 0; i < this.goods.length; i++) {
+                        if (this.goods[i].id === parseInt(this.item.id)) {
+                            this.goods[i].num += parseInt(this.item.num)
+                            return
+                        }
+                    }
+                    this.item.id=parseInt(this.item.id)
+                    this.item.num=parseInt(this.item.num)
+                    this.goods.push(this.item);
+                    this.item = {};
+                } else {
+                    alert("录入数据有误")
+                }
+            },
+        }
+
+    })
+</script>

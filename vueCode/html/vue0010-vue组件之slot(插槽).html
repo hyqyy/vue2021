@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue组件之插槽</title>
+</head>
+
+
+<body>
+<div id="app">
+<h1>{{title}}</h1>
+    <hr>
+    <login><span slot="bb">子组件添加的新信息</span></login>
+
+
+
+
+</div>
+</body>
+</html>
+
+
+<script src="../js/vue.js"></script>
+<script>
+
+
+    const login = {
+        "template": `
+
+            <div>
+                <slot name="aa"></slot>
+                <h3>{{msg}}</h3>
+                <slot name="bb">默认信息可以被覆盖</slot>
+            </div>`,
+        data() {
+            return {
+                msg: "子组件功能模块",
+            }
+        },
+        methods: {
+
+        },
+        computed: {},
+
+    }
+
+    new Vue({
+        el: "#app",
+        data: {
+            title: "vue组件之插槽:",
+        },
+        methods: {
+        },
+        computed: {},
+        components: {
+            login
+        }
+    })
+
+
+</script>
+
+
+

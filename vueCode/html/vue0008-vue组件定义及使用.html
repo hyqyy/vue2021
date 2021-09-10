@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue组件的定义及使用</title>
+</head>
+
+
+<body>
+<div id="app">
+    <h1 id="h1">{{title}}</h1><br/><br/>
+    --------------------------------------
+    各自有自己的一套data，methods,computed,生命周期函数等，仅仅是定义方式和使用范围的区别。
+    --------------------------------------
+    <login></login>
+    --------------------------------------
+    <register></register>
+
+</div>
+</body>
+</html>
+
+
+<script src="../js/vue.js"></script>
+<script>
+    Vue.component("register",{
+         "template":`<div><h3>{{msg}}</h3><span>数据{{count}}的平方是: {{squCount}}</span>&nbsp&nbsp<button @click="addOne">点击+1</button></div>`,
+        data(){
+            return {
+                msg:"全局注册组件-注册模块",
+                count:3
+            }
+        },
+        methods: {
+            addOne(){
+                this.count++;
+            }
+        },
+        computed: {
+            squCount(){
+                return this.count*this.count;
+            }
+        }
+
+    })
+
+    const login={
+        "template":`<div><h3>{{msg}}</h3><span>数据{{count}}的平方是: {{squareCount}}</span>&nbsp&nbsp<button @click="_add(2)">点击+2</button></div>`,
+        data(){
+            return {
+                msg:"局部注册组件-登录模块",
+                count:2
+            }
+        },
+        methods: {
+            _add(step){
+                this.count+=step;
+            }
+        },
+        computed: {
+            squareCount(){
+                return this.count*this.count;
+            }
+        }
+    }
+
+    new Vue({
+        el: "#app",
+        data: {
+            title: "vue组件的定义及使用:",
+        },
+        methods: {},
+        computed: {},
+        components:{
+            login
+        }
+    })
+
+
+</script>
+
+
+

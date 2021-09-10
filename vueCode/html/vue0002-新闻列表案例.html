@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新闻列表</title>
+</head>
+
+<body>
+<div id="app">
+    <h3>{{tmsg}}</h3><br>
+
+    <input v-model="news">
+    <button @click="addNews">添加新闻</button>
+    <ul>
+        <li v-for="(content,index) in lists" :key="index">{{index+1}} {{content}}<a href="javascript:"
+                                                                                    @click="deleteNews(index)"> 删除</a>
+        </li>
+    </ul>
+
+    <ul>
+        <li v-if="!lists.length">目前还没有新闻</li>
+    </ul>
+
+
+    <span v-show="lists.length">新闻数量：{{lists.length}}条</span><a v-show="lists.length" @click="deleteAll"
+                                                                href="javascript:">清空新闻</a>
+</div>
+</body>
+</html>
+
+
+<script src="../js/vue.js"></script>
+<script>
+    new Vue({
+        el: "#app",
+        data: {
+            tmsg: "新闻列表案例:",
+            lists: ["几内亚发生兵变 军车驶过激烈交火", "德国驻华大使贺岩去世", "丁宁宣布退役"],
+            news: "",
+
+        },
+
+        methods: {
+            addNews() {
+                if (this.news) {
+                    this.lists.push(this.news)
+                    this.news = ""
+                } else {
+                    alert("请输入新闻标题")
+                }
+
+            },
+
+            deleteNews(index) {
+                this.lists.splice(index, 1)
+            },
+
+            deleteAll() {
+                this.lists = [];
+            }
+        }
+
+
+    })
+
+</script>

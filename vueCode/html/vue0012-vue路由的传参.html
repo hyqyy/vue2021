@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue路由的基本使用</title>
+</head>
+
+
+<body>
+<div id="app">
+    <h1>{{title}}</h1>
+    <hr>
+    <router-view></router-view>
+    <hr>
+    <!--根据路径切换-->
+    <a href="#/login">登录1</a>&nbsp;&nbsp;&nbsp;<a href="#/register">注册1</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+    <router-link to="/login">登录2</router-link>&nbsp;&nbsp;&nbsp;<router-link to="/register">注册2</router-link>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+    <router-link :to="{path:'/login'}">登录3</router-link>&nbsp;&nbsp;&nbsp;<router-link :to="{path:'/register'}">注册3
+</router-link>
+
+    <!--根据名称切换-->
+    <!--推荐-->
+    <hr>
+    <router-link :to="{name:'login'}">登录4</router-link>&nbsp;&nbsp;&nbsp;<router-link :to={name:'register'}>注册4
+</router-link>
+    <hr>
+    <button @click="login">点我登录</button>&nbsp;&nbsp;&nbsp;<button @click="register">点我注册</button>
+
+</div>
+</body>
+</html>
+
+
+<script src="../js/vue.js"></script>
+<script src="../js/vue-router.js"></script>
+<script>
+
+    const login = {
+        template: `<div><h4>登录</h4>
+        <form>
+        账 号:<br>
+        <input type="text" name="firstname" value="">
+        <br>
+        密 码:<br>
+        <input type="text" name="lastname" value="">
+        <br><br>
+        <input type="submit" value="Submit">
+        </form></div>`,
+    }
+
+    const register = {
+        template: `<div><h4>注册</h4>
+        <form>
+        手机号:<br>
+        <input type="text" name="lastname" value="">
+        <br>
+        用户名:<br>
+        <input type="text" name="firstname" value="">
+        <br>
+        密 码:<br>
+        <input type="text" name="lastname" value="">
+        <br>
+        验证码:<br>
+        <input type="text" name="lastname" value="">
+        <br><br>
+        <input type="submit" value="Submit">
+        </form></div>`,
+    }
+
+    const pageNotFound = {
+        template: `<div><h3>页面飞到外太空了。。。</h3></div>`,
+    }
+
+    const routes = [
+        {path: "/", redirect: "/login"},
+        {path: "/login", component: login, name: "login"},
+        {path: "/register", component: register, name: "register"},
+        {path: "*", component: pageNotFound, name: "nonePage"}
+    ]
+
+
+    const router = new VueRouter({
+        routes,
+    })
+
+    // 解决从当路由前跳转当前路由报错问题
+    const originalPush = VueRouter.prototype.push;
+    VueRouter.prototype.push = function push(location) {
+        return originalPush.call(this, location).catch(err => err)
+    }
+
+    const app = new Vue({
+        el: "#app",
+        data: {
+            title: "vue路由的基本使用",
+        },
+        methods: {
+            login() {
+                // console.log(this.$route); //  当前路由对象
+                // console.log(this.$router);  //  路由器管理对象
+                alert("跳转到登录界面")
+                this.$router.push('/login')
+                // this.$router.push({path:'/login'})
+                // this.$router.push({name:'login'}) //推荐
+            },
+            register() {
+                alert("跳转到注册界面")
+                this.$router.push({name: 'register'})
+
+            },
+        },
+        router, // router:router,
+    })
+
+
+</script>
+
+
+

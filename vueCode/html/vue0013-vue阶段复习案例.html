@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<!-- 引入bootstrap样式-->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+      integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+
+
+<body>
+<div id="app">
+    <div class="container">
+        <div class="row"><h1 style="text-align: center">{{msg}}</h1></div>
+        <div class="row"><div style="float: right;margin-bottom: 5px">
+            <button @click="_add()" v-show="!isTrue" class="btn btn-primary">添加</button>
+            <button @click="login()" v-show="isTrue" class="btn btn-primary">登录</button>
+            <button @click="logout()" class="btn btn-primary">退出</button>
+        </div></div>
+        <div class="row"><router-view></router-view></div>
+    </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</body>
+</html>
+<template id="e_table">
+    <div>
+        <table border="1" class="table table-striped table-bordered table-hover">
+            <tr>
+                <th>工号</th>
+                <th>姓名</th>
+                <th>工龄</th>
+                <th>薪资</th>
+                <th>操作</th>
+            </tr>
+            <tr v-for="(employee, index) in employees" :key="employee.id" :class="index%2==0?'success':'info'">
+                <td>{{employee.id}}</td>
+                <td>{{employee.name}}</td>
+                <td>{{employee.age}}</td>
+                <td>{{employee.salary}}</td>
+                <td><a href="javascript:;" style="text-decoration: none;"
+                       @click="_delete(employee.id)" class="btn btn-danger btn-sm">删除</a>&nbsp;&nbsp;<a
+                        href="javascript:;"
+                        style="text-decoration: none;" @click="__update(employee.id)" class="btn btn-warning btn-sm"
+                >修改</a>
+                </td>
+            </tr>
+        </table>
+        <router-view @func="parentMethod" :employee="employee"></router-view>
+    </div>
+</template>
+
+<template id="e_add">
+    <form>
+
+        <div class="form-group">
+        <label for="empt_name_">姓名</label><br>
+        <input  v-model="employee.name" class="form-control" id="empt_name_" type="text"/>
+        </div>
+
+        <div class="form-group">
+        <label for="empt_age_">工龄</label><br>
+        <input  v-model="employee.age" class="form-control" id="empt_age_" type="text"/>
+        </div>
+
+        <div class="form-group">
+        <label for="empt_salary_">薪资</label><br>
+        <input  v-model="employee.salary" class="form-control" id="empt_salary_" type="text"/>
+        </div>
+        <input type="button" value="提交" @click="_save()" class="btn btn-success btn-sm"/>
+        <input type="button" value="取消" @click="_cancel()" class="btn btn-info btn-sm"/>
+        <input type="button" value="重置" @click="_reset()" class="btn btn-warning btn-sm"/>
+    </form>
+
+</template>
+
+<template id="e_edit">
+    <form>
+        <div class="form-group">
+        <label for="empt_id">工号</label><br>
+        <input readonly v-model="employee.id" class="form-control" id="empt_id" type="text"/>
+        </div>
+
+        <div class="form-group">
+        <label for="empt_name">姓名</label><br>
+        <input  v-model="employee.name" class="form-control" id="empt_name" type="text"/>
+        </div>
+
+        <div class="form-group">
+        <label for="empt_age">工龄</label><br>
+        <input  v-model="employee.age" class="form-control" id="empt_age" type="text"/>
+        </div>
+
+        <div class="form-group">
+        <label for="empt_salary">薪资</label><br>
+        <input  v-model="employee.salary" class="form-control" id="empt_salary" type="text"/>
+        </div>
+        <input type="button" value="提交" @click="_save()" class="btn btn-success btn-sm"/>
+        <input type="button" value="取消" @click="_cancel()" class="btn btn-info btn-sm"/>
+    </form>
+
+</template>
+
+
+<script src="../js/vue.js"></script>
+<script src="../js/vue-router.js"></script>
+<script src="../js/axios.js"></script>
+<script>
+
+    // 解决从当路由前跳转当前路由报错问题
+    const originalPush = VueRouter.prototype.push;
+    VueRouter.prototype.push = function push(location) {
+        return originalPush.call(this, location).catch(err => err)
+    }
+
+    // 创建axios请求实例，发送请求
+    const instance = axios.create({
+        baseURL: 'http://localhost:8082',
+        timeout: 5000
+    });
+
+    const table = {
+        template: `#e_table`,
+        data() {
+            return {
+                employees: [],
+                employee: {}
+            }
+        },
+        methods: {
+            _delete(id) {
+                if (window.confirm("确认删除吗？")) {
+                    let _this = this
+                    instance.post("/sql/employee/delete", {"id": id}).then(
+                            function (response) {
+                                instance.get("/sql/employee/all").then(
+                                        function (response) {
+                                            _this.employees = response.data
+
+                                        }
+                                )
+
+
+                            }
+                    )
+                }
+            },
+
+            __update(id) {
+                instance.get("/sql/employee/" + id).then(
+                        (response) => {
+                            this.employee = response.data[0];
+                            this.$router.push({name: "edit"})
+                        }
+                )
+
+            },
+
+            // 子向父传递参数
+            parentMethod(params) {
+                this.employees = params;
+            }
+
+        },
+        created() {
+            instance.get("/sql/employee/all").then(
+                    response => this.employees = response.data
+            )
+        }
+
+    }
+    const add = {
+        template: `#e_add`,
+        data() {
+
+            return {
+                employee: {}
+            }
+        },
+        methods: {
+            _save() {
+                let _this = this;
+                instance.post("/sql/employee/add", this.employee).then(
+                        function (response) {
+                            instance.get("/sql/employee/all").then(
+                                    function (response) {
+                                        _this.$emit("func", response.data)
+                                        _this.$router.push({name: "table"})
+
+
+                                    }
+                            )
+
+
+                        }
+                )
+            },
+
+            _reset() {
+                this.employee = {}
+            },
+
+            _cancel() {
+                if (window.confirm("确认取消吗？")) {
+                    this.$router.push({name: "table"})
+                }
+            }
+        }
+    }
+    const edit = {
+        template: `#e_edit`,
+        data() {
+            return {}
+        },
+        methods: {
+            _cancel() {
+                this.$router.push({name: "table"})
+            },
+
+            _save() {
+                let _this = this;
+                instance.post("/sql/employee/add", this.employee).then(
+                        function (response) {
+                            instance.get("/sql/employee/all").then(
+                                    function (response) {
+                                        _this.$emit("func", response.data)
+                                        _this.$router.push({name: "table"})
+
+
+                                    }
+                            )
+
+
+                        }
+                )
+            },
+
+        },
+        props: ["employee"]
+    }
+    const routes = [
+        {
+            path: '/all', component: table, name: "table", children:
+                    [
+                        {path: 'add', component: add, name: "add"},
+                        {path: 'edit', component: edit, name: "edit"}
+                    ]
+        }
+    ]
+    const router = new VueRouter({
+        routes,
+    })
+    const app = new Vue({
+        el: "#app",
+        data: {
+            msg: "员工薪酬管理系统",
+            isTrue: true
+        },
+        methods: {
+            login() {
+                this.$router.push({name: "table"});
+                this.isTrue = false;
+
+            },
+
+            logout() {
+                this.$router.push("/");
+                this.isTrue = true;
+            },
+
+            _add() {
+                this.$router.push({name: "add"})
+            },
+
+        },
+        router,
+    })
+
+
+</script>
+
+<style>
+    .table-bordered {
+        border: 5px solid #e2ef2152;
+    }
+</style>
+
+
